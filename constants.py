@@ -32,15 +32,14 @@ MIRRORS = [
     "libgen.org"
 ]
 
-DEFAULT_MIRROR = MIRRORS[0]
+DEFAULT_MIRROR = MIRRORS[1]
 
 ENDPOINTS = {
     'search': 'http://{mirror}/search.php'
               '?req={req}&res=100&column={column}',
     'lookup': 'http://{mirror}/json.php'
               '?ids={ids}&fields={fields}',
-    'download': 'http://{mirror}/get.php'
-              '?md5={md5}',
+    'download': 'http://library.lol/main/{md5}'
 }
 
 DEFAULT_FIELDS = [

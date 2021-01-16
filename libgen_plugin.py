@@ -3,7 +3,7 @@ __copyright__ = '2017, MCOfficer <mcofficer@gmx.de>'
 __docformat__ = 'restructuredtext en'
 
 
-from pylibgen import Library
+from .pylibgen import Library
 
 from contextlib import closing
 
@@ -12,7 +12,6 @@ from PyQt5.Qt import QUrl
 from calibre import browser
 from calibre.gui2 import open_url
 from calibre.gui2.store import StorePlugin
-from calibre.gui2.store.basic_config import BasicStoreConfig
 from calibre.gui2.store.search_result import SearchResult
 from calibre.gui2.store.web_store_dialog import WebStoreDialog
 
@@ -21,7 +20,7 @@ lg = Library()
 br = browser()
 
 
-class LibGen_Store(BasicStoreConfig, StorePlugin):
+class LibGen_Store(StorePlugin):
 
 
     RES_THRESH = 5
@@ -76,12 +75,9 @@ class LibGen_Store(BasicStoreConfig, StorePlugin):
             s.drm = SearchResult.DRM_UNLOCKED
             s.formats = r['extension']
             s.detail_item = r['md5']
+            s.cover_url = self.get_cover_url(s.detail_item)
             yield s
 
-    def get_details(self, search_result, timeout=60):
-        if self.num_results > self.RES_THRESH:
-            return False
+    def get_details(self, search_result, details, timeout=60):
         s = search_result
-        s.cover_url = self.get_cover_url(s.detail_item)
         s.downloads[s.formats] = lg.get_download_url(s.detail_item)
-        return True

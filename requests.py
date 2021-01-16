@@ -15,15 +15,10 @@ See the License for the specific language governing permissions and limitations 
 """
 
 
-import urllib2
+import urllib.request as urllib2
 import codecs
 import json
-import httplib
-
-# A monkey patch for the requests library.
-
-bytes = str
-str = unicode
+import httplib2
 
 CONTENT_CHUNK_SIZE = 10 * 1024
 
@@ -79,13 +74,13 @@ def iter_slices(string, slice_length):
 class HTTPError(urllib2.HTTPError):
     def __init__(self, code, url="", msg=None):
         urllib2.HTTPError.__init__(self, url, code=code,
-                msg=httplib.responses.get(code, "") if msg is None else msg,
+                msg=httplib2.responses.get(code, "") if msg is None else msg,
                 hdrs=None, fp=None)
 
 class RequestWrapper:
     def __init__(self, resp):
         self.resp = resp
-        self.encoding = self.resp.headers.getparam('charset') 
+        self.encoding = self.resp.headers.get_param('charset')
         self.status_code = self.resp.getcode()
         self._content = False
         self._content_consumed = False
@@ -109,7 +104,7 @@ class RequestWrapper:
             raise StreamConsumedError()
         elif chunk_size is not None and not isinstance(chunk_size, int):
             raise TypeError("chunk_size must be an int, it is instead a %s." % type(chunk_size))
-        
+
         # simulate reading small chunks of the content
         reused_chunks = iter_slices(self._content, chunk_size)
 
@@ -118,7 +113,7 @@ class RequestWrapper:
         chunks = reused_chunks if self._content_consumed else stream_chunks
 
         return chunks
-        
+
 
 
     @property
@@ -172,7 +167,6 @@ class RequestWrapper:
                     # used.
                     pass
         return json.loads(self.text, **kwargs)
-    
 
 def get(url):
   r = urllib2.urlopen(url)

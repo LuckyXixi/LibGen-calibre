@@ -27,9 +27,8 @@ SOFTWARE.
 import os
 import re
 import webbrowser
-from urllib import quote_plus
+from urllib.parse import quote_plus
 from . import constants, requests
-
 
 class Library(object):
     """Library Genesis interface wrapper."""
@@ -117,8 +116,8 @@ class Library(object):
         if enable_ads:
             return url
         r = self.__req('download', {'md5': md5})
-        key = re.findall("&key=(.*?)'", r.text)[0]
-        return '{}&key={}'.format(url, key)
+        url = re.findall('<a href="(.*)">GET', r.text)[0]
+        return url
 
     def download(self, md5, dest='.', use_browser=False):
         """Downloads a Library Genesis book.
